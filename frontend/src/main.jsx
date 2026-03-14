@@ -1,10 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+/**
+ * main.jsx — Vite + React application entry point
+ *
+ * Mounts root App component into #root div in index.html.
+ * StrictMode highlights potential problems during development —
+ * it renders components twice in dev to catch side effects.
+ */
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+// 🧠 LEARN: in Vite, this is main.jsx not index.js
+// but it does exactly the same thing — boots up React
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
+  </React.StrictMode>
 )

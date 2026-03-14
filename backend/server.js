@@ -28,7 +28,8 @@ const userRoutes = require('./routes/users')
 const habitRoutes = require('./routes/habits')
 const mealRoutes = require('./routes/meals')
 const aiRoutes = require('./routes/ai')
-
+const planRoutes = require('./routes/plan')
+const mealReplaceRoutes = require('./routes/mealReplace')
 
 
 // APP INITIALIZATION
@@ -74,7 +75,8 @@ app.use('/api/users', userRoutes)
 app.use('/api/habits', habitRoutes)
 app.use('/api/meals', mealRoutes)
 app.use('/api/ai', aiRoutes)
-
+app.use('/api/plan', planRoutes)
+app.use('/api/meal', mealReplaceRoutes)
 /**
  * Health check route — useful to verify the server is alive.
  * Deployment platforms (Render) ping this to check status.

@@ -41,6 +41,47 @@ router.post('/register', async (req, res) => {
   }
 })
 
+
+/**
+ * POST /api/users/login
+ * Finds user by email and returns their profile.
+ *
+ * MVP auth — email only, no password.
+ * In production: compare bcrypt hashed passwords.
+ */
+// 🧠 LEARN: this is a "soft login" — just finds the user
+// by email. Real apps would check password hash too.
+router.post('/login', async (req, res) => {
+  try {
+    const { email } = req.body
+
+    // 🧠 LEARN: findOne searches for first document
+    // matching the condition. Returns null if not found.
+    const user = await User.findOne({ email: email.toLowerCase() })
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'No account found with this email. Please register first.'
+      })
+    }
+
+    // Calculate current program day
+    const start = new Date(user.programStart)
+    const today = new Date()
+    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24))
+    const currentDay = Math.min(diffDays + 1, 14)
+
+    res.json({
+      success: true,
+      user,
+      currentDay
+    })
+
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // ─────────────────────────────────────────
 // GET /api/users/:id
 // Get a user's profile + calculate current day

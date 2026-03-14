@@ -1,121 +1,104 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// /**
+//  * App.jsx — Root component and routing logic
+//  *
+//  * Checks localStorage for existing userId on load.
+//  * If found: show Dashboard (returning user).
+//  * If not found: show Onboarding (new user).
+//  *
+//  * This replaces a full auth system for the MVP prototype.
+//  * In production: verify session token with backend on load.
+//  */
 
-function App() {
-  const [count, setCount] = useState(0)
+// import React, { useState, useEffect } from 'react'
+// import Dashboard from './pages/Dashboard'
+// import Onboarding from './pages/Onboarding'
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+// const App = () => {
 
-      <div className="ticks"></div>
+//   // 🧠 LEARN: null = loading, '' = no user, 'abc123' = logged in
+//   const [userId, setUserId] = useState(null)
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+//   /**
+//    * On first load, check if userId exists in localStorage.
+//    * This persists the "logged in" state across page refreshes.
+//    */
+//   // 🧠 LEARN: useEffect with [] runs exactly once when app loads
+//   useEffect(() => {
+//     const savedId = localStorage.getItem('yolo_userId')
+//     // 🧠 LEARN: savedId || '' means "use savedId if it exists,
+//     // otherwise use empty string"
+//     setUserId(savedId || '')
+//   }, [])
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+//   /**
+//    * handleOnboardingComplete — called after registration succeeds
+//    * @param {string} newUserId — _id returned from backend
+//    */
+//   const handleOnboardingComplete = (newUserId) => {
+//     setUserId(newUserId)
+//   }
+
+//   // Still checking localStorage — show nothing briefly
+//   // 🧠 LEARN: returning null renders nothing — prevents flash
+//   if (userId === null) return null
+
+//   // New user — show onboarding
+//   if (userId === '') {
+//     return <Onboarding onComplete={handleOnboardingComplete} />
+//   }
+
+//   // Existing user — show dashboard
+//   return <Dashboard userId={userId} />
+// }
+
+// export default App
+
+
+/**
+ * App.jsx — Root component and auth routing
+ *
+ * Three states:
+ * 1. null    → still reading localStorage (show nothing)
+ * 2. ''      → no user found → show Auth screen
+ * 3. 'abc..' → user logged in → show Dashboard
+ *
+ * Auth screen handles both login and register.
+ * No need for separate Onboarding.jsx anymore.
+ */
+
+import React, { useState, useEffect } from 'react'
+import Dashboard from './pages/Dashboard'
+import Auth from './pages/Auth'
+
+// 🧠 LEARN: you can delete Onboarding.jsx now —
+// Auth.jsx replaces it with both login + register tabs
+
+const App = () => {
+
+  // null = checking storage, '' = not logged in, string = logged in
+  const [userId, setUserId] = useState(null)
+
+  useEffect(() => {
+    // 🧠 LEARN: read localStorage when app first loads
+    // This is how we remember the user across page refreshes
+    const savedId = localStorage.getItem('yolo_userId')
+    setUserId(savedId || '')
+  }, [])
+
+  const handleAuthComplete = (newUserId) => {
+    setUserId(newUserId)
+  }
+
+  // Still reading localStorage — render nothing briefly
+  if (userId === null) return null
+
+  // Not logged in → show Auth (login + register)
+  if (!userId) {
+    return <Auth onComplete={handleAuthComplete} />
+  }
+
+  // Logged in → show Dashboard
+  return <Dashboard userId={userId} />
 }
 
 export default App
