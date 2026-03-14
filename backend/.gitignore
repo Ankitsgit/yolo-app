@@ -1,0 +1,6 @@
+### Step 9 — Fill in your .gitignore file
+
+Click on `backend/.gitignore`. Add:
+```
+node_modules
+.env
