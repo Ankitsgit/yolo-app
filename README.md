@@ -293,45 +293,59 @@ The goal in 30 days is to prove the core hypothesis: *will users log habits and 
 6. Click "Replace meal" and type ingredients you have.
 7. Ask the AI assistant anything — notice it knows your calories and habits.
 
-## 💻 Local Setup
+# 💻 Local Setup
 
-### Prerequisites
+## Prerequisites
+
 - Node.js v18+
 - Git
 - MongoDB Atlas account (free) — [mongodb.com/atlas](https://mongodb.com/atlas)
 - Groq API key (free) — [console.groq.com](https://console.groq.com)
 
-### Installation
-docker# Clone the repository
-git clone https://github.com/YOUR_USERNAME/yolo-wellness-app.git
-git clone https://github.com/YOUR_USERNAME/yolo-wellness-app.git
-dc yolo-wellness-app
+## Installation
 
-docker# Install backend dependencies
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/yolo-wellness-app.git
+cd yolo-wellness-app
+```
+
+### Install backend dependencies
+```bash
 cd backend
 npm install
+```
 
-docker# Install frontend dependencies
+### Install frontend dependencies
+```bash
 cd ../frontend
 npm install
+```
 
-### Environment Variables
+## Environment Variables
 Create `backend/.env`:
+```
 envMONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/yolodb?retryWrites=true&w=majority
-envGROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-envPORT=5000
+gROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PORT=5000
+```
 Create `frontend/.env`:
+```
 envVITE_API_URL=http://localhost:5000
+```
 
-### Running Locally
-docker# Terminal 1 — Backend (runs on port 5000)
-cd backend 
-npm run dev 
-
-docker# Terminal 2 — Frontend (runs on port 3000)
-cd frontend 
-npm run dev 
-Open [http://localhost:3000](http://localhost:3000)
+## Running Locally
+- **Terminal 1 — Backend (runs on port 5000)**
+```bash
+dd backend
+yarn run dev # or npm run dev if using npm instead of yarn 
+```
+- **Terminal 2 — Frontend (runs on port 3000)**
+```bash
+dd frontend
+yarn run dev # or npm run dev if using npm instead of yarn 
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📡 API Reference
 | Method | Endpoint | Description |
