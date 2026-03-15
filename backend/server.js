@@ -100,6 +100,16 @@ app.get('/', (req, res) => {
  * connectDB() is async, so we use .then() to chain actions.
  */
 connectDB().then(() => {
+  // Add this check right after require('dotenv').config()
+  if (!process.env.MONGODB_URI) {
+    console.error('❌ MONGODB_URI is not set. Check environment variables.')
+    process.exit(1)
+  }
+
+  if (!process.env.GROQ_API_KEY) {
+    console.error('❌ GROQ_API_KEY is not set. Check environment variables.')
+    process.exit(1)
+  }
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`)
     console.log(`📊 API ready at http://localhost:${PORT}/api`)

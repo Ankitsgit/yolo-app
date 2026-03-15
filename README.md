@@ -306,8 +306,8 @@ The goal in 30 days is to prove the core hypothesis: *will users log habits and 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/yolo-wellness-app.git
-cd yolo-wellness-app
+git clone https://github.com/Ankitsgit/yolo-app.git
+cd yolo-app
 ```
 
 ### Install backend dependencies
