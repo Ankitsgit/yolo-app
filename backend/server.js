@@ -48,7 +48,15 @@ const PORT = process.env.PORT || 5000
  * Think of it as security checks at a building entrance —
  * everyone goes through them regardless of where they're going.
  */
-app.use(cors())
+// app.use(cors())
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://yolo-app-six.vercel.app/',    // ← paste your actual Vercel URL here
+    /\.vercel\.app$/
+  ],
+  credentials: true
+}))
 
 /**
  * express.json() automatically parses incoming JSON bodies.
