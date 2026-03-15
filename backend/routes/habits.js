@@ -30,77 +30,34 @@ router.post('/log', async (req, res) => {
   }
 })
 
-// ─────────────────────────────────────────
-// GET /api/habits/:userId/today
-// Get today's habit log for a user
-// ─────────────────────────────────────────
 router.get('/:userId/today', async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0]  // "2025-03-14"
+    // 🧠 LEARN: req.query reads URL query parameters
+    // /api/habits/123/today?date=2025-03-10 → req.query.date = "2025-03-10"
+    const date = req.query.date || new Date().toISOString().split('T')[0]
 
     const log = await HabitLog.findOne({
       userId: req.params.userId,
-      date: today
+      date
     })
 
-    // If no log yet today, return all habits as false
     if (!log) {
       return res.json({
         success: true,
         log: {
           habits: { meals: false, water: false, workout: false, steps: false, sleep: false },
           score: 0
-        }
+        },
+        date
       })
     }
 
-    res.json({ success: true, log })
+    res.json({ success: true, log, date })
 
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 })
-
-// ─────────────────────────────────────────
-// GET /api/habits/:userId/streak
-// Calculate current streak + consistency %
-// ─────────────────────────────────────────
-// router.get('/:userId/streak', async (req, res) => {
-//   try {
-//     // Get all logs for this user, sorted newest first
-//     const logs = await HabitLog.find({ userId: req.params.userId })
-//       .sort({ date: -1 })  // -1 = descending (newest first)
-
-//     // Calculate streak — consecutive days with score >= 3
-//     let streak = 0
-//     let checkDate = new Date()
-
-//     for (let i = 0; i < logs.length; i++) {
-//       const logDate = new Date(logs[i].date)
-//       const diff = Math.floor((checkDate - logDate) / (1000 * 60 * 60 * 24))
-
-//       // If this log is from expected date AND score >= 3
-//       if (diff <= 1 && logs[i].score >= 3) {
-//         streak++
-//         checkDate = logDate  // move check window back one day
-//       } else {
-//         break  // streak broken
-//       }
-//     }
-
-//     // Calculate consistency % over last 14 days
-//     const last14 = logs.slice(0, 14)
-//     const goodDays = last14.filter(l => l.score >= 3).length
-//     const consistency = last14.length > 0
-//       ? Math.round((goodDays / last14.length) * 100)
-//       : 0
-
-//     res.json({ success: true, streak, consistency })
-
-//   } catch (error) {
-//     res.status(500).json({ error: error.message })
-//   }
-// })
 router.get('/:userId/streak', async (req, res) => {
   try {
     const logs = await HabitLog.find({ userId: req.params.userId })

@@ -17,61 +17,6 @@ const MealOverride = require('../models/MealOverride')
 const User = require('../models/User')
 const { generateDayPlan } = require('../services/aiPlanner')
 
-// ─────────────────────────────────────────────────────
-// POST /api/plan/generate
-// ─────────────────────────────────────────────────────
-
-/**
- * Generate or retrieve today's meal plan.
- * Cache-first: if plan exists, skip AI call entirely.
- * This is important to preserve free tier quota.
- */
-// router.post('/generate', async (req, res) => {
-//   try {
-//     const { userId, dayNumber } = req.body
-
-//     // Step 1: Check cache first
-//     // 🧠 LEARN: if we already generated today's plan, just return it
-//     // No need to call Groq again — same result, wastes quota
-//     const existing = await DailyPlan.findOne({ userId, dayNumber })
-//     if (existing) {
-//       return res.json({ success: true, plan: existing, cached: true })
-//     }
-
-//     // Step 2: Fetch user profile for AI context
-//     const user = await User.findById(userId)
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' })
-//     }
-
-//     // Step 3: Generate via AI
-//     // 🧠 LEARN: this is the expensive operation — calling Groq API
-//     // We only reach here if no cached plan exists
-//     const generatedPlan = await generateDayPlan(user, dayNumber)
-
-//     // Step 4: Save to MongoDB
-//     const plan = new DailyPlan({
-//       userId,
-//       dayNumber,
-//       meals: {
-//         breakfast: generatedPlan.breakfast,
-//         lunch:     generatedPlan.lunch,
-//         dinner:    generatedPlan.dinner,
-//         snack:     generatedPlan.snack
-//       },
-//       totalCalories: generatedPlan.totalCalories,
-//       totalProtein:  generatedPlan.totalProtein
-//     })
-
-//     await plan.save()
-
-//     res.status(201).json({ success: true, plan, cached: false })
-
-//   } catch (error) {
-//     console.error('Plan generation error:', error.message)
-//     res.status(500).json({ error: 'Could not generate meal plan', details: error.message })
-//   }
-// })
 
 router.post('/generate', async (req, res) => {
   try {
@@ -80,7 +25,7 @@ router.post('/generate', async (req, res) => {
     // Step 1: Check if plan already exists — return immediately if so
     // 🧠 LEARN: this is "cache-first" pattern — never call AI
     // if we already have the answer stored in database
-    const existing = await DailyPlan.findOne({ userId, dayNumber })
+    const existing = await DailyPlan.findOne({ userId, dayNumber }).lean()
     if (existing) {
       return res.json({ success: true, plan: existing, cached: true })
     }
@@ -144,50 +89,48 @@ router.post('/generate', async (req, res) => {
     res.status(500).json({ error: 'Could not generate meal plan', details: error.message })
   }
 })
-// ─────────────────────────────────────────────────────
-// GET /api/plan/:userId/:dayNumber
-// ─────────────────────────────────────────────────────
 
-/**
- * Retrieve existing plan + any overrides.
- * Merges overrides into the plan before returning —
- * frontend always gets the final version to display.
- */
 router.get('/:userId/:dayNumber', async (req, res) => {
   try {
     const { userId, dayNumber } = req.params
 
-    const plan = await DailyPlan.findOne({ userId, dayNumber: Number(dayNumber) })
+    // 🧠 LEARN: .lean() returns plain JS object instead of
+    // Mongoose document — much easier to modify and spread
+    const plan = await DailyPlan
+      .findOne({ userId, dayNumber: Number(dayNumber) })
+      .lean()
 
     if (!plan) {
       return res.status(404).json({ error: 'Plan not generated yet' })
     }
 
-    // Fetch any meal overrides for this day
-    // 🧠 LEARN: find() returns array — could be multiple overrides
-    const overrides = await MealOverride.find({ userId, dayNumber: Number(dayNumber) })
+    // Fetch overrides for this day
+    const overrides = await MealOverride
+      .find({ userId, dayNumber: Number(dayNumber) })
+      .lean()
 
-    /**
-     * Merge overrides into plan meals.
-     * If user replaced lunch, show replacement instead of original.
-     * We build a plain object copy so we can modify it safely.
-     */
-    const mergedMeals = { ...plan.meals.toObject() }
+    // 🧠 LEARN: start with a copy of meals from DB
+    // then overwrite specific meal slots where overrides exist
+    const mergedMeals = { ...plan.meals }
 
     overrides.forEach(override => {
+      // Replace the meal slot with AI-generated replacement
       mergedMeals[override.mealType] = {
-        ...mergedMeals[override.mealType],
-        foods: override.replacement.foods,
+        foods:    override.replacement.foods,
         calories: override.replacement.calories,
-        protein: override.replacement.protein,
+        protein:  override.replacement.protein,
         isReplaced: true,
-        replacedWith: override.availableIngredients
+        originalFoods: plan.meals[override.mealType]?.foods || ''
       }
     })
 
-    res.json({ success: true, plan: { ...plan.toObject(), meals: mergedMeals } })
+    res.json({
+      success: true,
+      plan: { ...plan, meals: mergedMeals }
+    })
 
   } catch (error) {
+    console.error('Get plan error:', error.message)
     res.status(500).json({ error: error.message })
   }
 })

@@ -10,7 +10,6 @@
 
 const mongoose = require('mongoose')
 
-// 🧠 LEARN: reusable sub-schema for each meal slot
 // We define it once and use it 4 times (breakfast/lunch/dinner/snack)
 const mealSlotSchema = new mongoose.Schema({
   foods: {

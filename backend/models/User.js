@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema({
     default: 'moderate'
     },
 
-    // 🧠 LEARN: enum means only these exact strings are valid
+
     // Mongoose rejects anything not in this list
     dietPreference: {
     type: String,

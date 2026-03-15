@@ -23,31 +23,23 @@ const HABITS = [
   { key: 'sleep',   emoji: '😴', name: 'Sleep 7–8 hrs',   target: 'Log bedtime' },
 ]
 
-const HabitTracker = ({ userId, onUpdate }) => {
+const HabitTracker = ({ userId, onUpdate, date, readOnly = false }) => {
 
-  // 🧠 LEARN: habits state stores { meals: true, water: false, ... }
   const [habits, setHabits] = useState({
     meals: false, water: false, workout: false, steps: false, sleep: false
   })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading]   = useState(true)
+  const [saving, setSaving]     = useState(false)
 
-  // Today's date as "YYYY-MM-DD"
-  // 🧠 LEARN: new Date().toISOString() gives "2025-03-14T10:30:00.000Z"
-  // .split('T')[0] takes just the date part before the T
-  const today = new Date().toISOString().split('T')[0]
+  // Use passed date or today
+  // 🧠 LEARN: prop takes priority over calculated today
+  const targetDate = date || new Date().toISOString().split('T')[0]
 
-  /**
-   * useEffect — runs code when component first appears on screen.
-   * The [] means "run once on mount, never again."
-   * Fetches today's existing habit data from backend.
-   */
-  // 🧠 LEARN: useEffect is like saying "after the screen shows,
-  // go fetch the data." The [] means only do it once.
   useEffect(() => {
     const fetchHabits = async () => {
       try {
-        const data = await getTodayHabits(userId)
+        // Pass date to API — backend filters by this date
+        const data = await getTodayHabits(userId, targetDate)
         setHabits(data.log.habits)
       } catch (err) {
         console.error('Could not fetch habits:', err)
@@ -56,37 +48,27 @@ const HabitTracker = ({ userId, onUpdate }) => {
       }
     }
     fetchHabits()
-  }, [userId])  // re-run if userId changes
+  }, [userId, targetDate])  // re-fetch when date changes
 
-  /**
-   * toggleHabit — flips one habit true/false and saves to DB
-   * @param {string} key — habit name e.g. "workout"
-   */
   const toggleHabit = async (key) => {
-    // 🧠 LEARN: create updated habits object with one value flipped
-    // !habits[key] means "opposite of current value"
-    const updated = { ...habits, [key]: !habits[key] }
+    // 🧠 LEARN: bail out immediately if read-only
+    // past days and future days cannot be edited
+    if (readOnly) return
 
-    // Update screen immediately (optimistic update)
-    // 🧠 LEARN: optimistic update = show change instantly on screen
-    // then save to DB in background. Feels much faster to user.
+    const updated = { ...habits, [key]: !habits[key] }
     setHabits(updated)
     setSaving(true)
 
     try {
-      await logHabits(userId, today, updated)
-      // Tell Dashboard to refresh streak numbers
+      await logHabits(userId, targetDate, updated)
       if (onUpdate) onUpdate()
     } catch (err) {
-      // If save fails, revert the checkbox back
-      // 🧠 LEARN: always revert optimistic updates on failure
       setHabits(habits)
       console.error('Could not save habit:', err)
     } finally {
       setSaving(false)
     }
   }
-
   // Count completed habits for progress bar
   const doneCount = Object.values(habits).filter(Boolean).length
   const progress = (doneCount / HABITS.length) * 100
@@ -99,6 +81,23 @@ const HabitTracker = ({ userId, onUpdate }) => {
 
   return (
     <div className="card">
+
+            {/* Read-only banner */}
+      {readOnly && (
+        <div
+          style={{
+            background: "#f3f4f6",
+            borderRadius: 8,
+            padding: "6px 12px",
+            marginBottom: 12,
+            fontSize: 12,
+            color: "#888",
+            textAlign: "center"
+          }}
+        >
+          📖 View only — {date ? "Day history" : "upcoming day"}
+        </div>
+      )}
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -114,12 +113,15 @@ const HabitTracker = ({ userId, onUpdate }) => {
       {HABITS.map(habit => (
         <div
           key={habit.key}
-          onClick={() => toggleHabit(habit.key)}
+          // onClick={() => toggleHabit(habit.key)}
+          onClick={() => !readOnly && toggleHabit(habit.key)}
           style={{
             display: 'flex', alignItems: 'center', gap: 12,
             padding: '10px 0',
             borderBottom: '1px solid #f0f0f0',
-            cursor: 'pointer',
+            // cursor: 'pointer',
+            cursor: readOnly ? 'default' : 'pointer',
+            opacity: readOnly && !habits[habit.key] ? 0.5 : 1,
             // 🧠 LEARN: transition makes the opacity change smoothly
             transition: 'opacity 0.15s',
           }}

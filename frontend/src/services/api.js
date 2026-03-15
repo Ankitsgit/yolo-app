@@ -138,10 +138,13 @@ export const logHabits = (userId, date, habits) =>
  *
  * @param {string} userId
  * @returns {object} { success, log: { habits, score } }
- */
-export const getTodayHabits = (userId) =>
-  request(`/api/habits/${userId}/today`)
+ * @param {string} date - optional "YYYY-MM-DD", defaults to today
 
+ */
+// export const getTodayHabits = (userId) =>
+//   request(`/api/habits/${userId}/today`)
+export const getTodayHabits = (userId, date = '') =>
+  request(`/api/habits/${userId}/today${date ? `?date=${date}` : ''}`)
 /**
  * getStreak — GET /api/habits/:userId/streak
  * Calculates consecutive good days + consistency %
@@ -183,9 +186,10 @@ export const logMeal = (mealData) =>
  * @param {string} userId
  * @returns {object} { success, meals, totalCalories, totalProtein, calorieTarget, remaining }
  */
-export const getTodayMeals = (userId) =>
-  request(`/api/meals/${userId}/today`)
-
+// export const getTodayMeals = (userId) =>
+//   request(`/api/meals/${userId}/today`)
+export const getTodayMeals = (userId, date = '') =>
+  request(`/api/meals/${userId}/today${date ? `?date=${date}` : ''}`)
 
 // ─────────────────────────────────────────────────────────────
 // AI API CALL

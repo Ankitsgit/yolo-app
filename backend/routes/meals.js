@@ -5,30 +5,6 @@ const router = express.Router()
 const MealLog = require('../models/MealLog')
 const User = require('../models/User')
 
-// ─────────────────────────────────────────
-// POST /api/meals/log
-// Save a new meal entry
-// ─────────────────────────────────────────
-// router.post('/log', async (req, res) => {
-//   try {
-//     const { userId, date, mealName, foodDesc, calories, protein } = req.body
-
-//     const meal = new MealLog({
-//       userId,
-//       date,
-//       mealName,
-//       foodDesc,
-//       calories,
-//       protein: protein || 0
-//     })
-
-//     await meal.save()
-//     res.status(201).json({ success: true, meal })
-
-//   } catch (error) {
-//     res.status(500).json({ error: error.message })
-//   }
-// })
 router.post('/log', async (req, res) => {
   try {
     const { userId, date, mealName, foodDesc, calories, protein } = req.body
@@ -90,54 +66,37 @@ router.post('/log', async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 })
-// ─────────────────────────────────────────
-// GET /api/meals/:userId/today
-// Get all meals today + total calories + remaining
-// ─────────────────────────────────────────
+
 router.get('/:userId/today', async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0]
+    // 🧠 LEARN: same pattern — use query date or fall back to today
+    const date = req.query.date || new Date().toISOString().split('T')[0]
 
-    // Get all meals logged today
-    const meals = await MealLog.find({
-      userId: req.params.userId,
-      date: today
-    })
+    const meals = await MealLog.find({ userId: req.params.userId, date })
 
-    // Add up all calories
-    const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0)
-    const totalProtein = meals.reduce((sum, meal) => sum + meal.protein, 0)
+    const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0)
+    const totalProtein  = meals.reduce((sum, m) => sum + m.protein,  0)
 
-    // Get user's calorie target
     const user = await User.findById(req.params.userId)
-    const calorieTarget = user ? user.calorieTarget : 1800
-    const remaining = calorieTarget - totalCalories
+    const calorieTarget = user?.calorieTarget || 1800
+    const proteinTarget = user?.proteinTarget || 120
 
-    // res.json({
-    //   success: true,
-    //   meals,
-    //   totalCalories,
-    //   totalProtein,
-    //   calorieTarget,
-    //   remaining
-    // })
-    // Find this existing res.json() and add proteinTarget + totalProtein
     res.json({
-    success: true,
-    meals,
-    totalCalories,
-    totalProtein,        // ← already calculated, just add to response
-    calorieTarget,
-    proteinTarget: user ? user.proteinTarget : 120,   // ← add this line
-    remaining,
-    proteinRemaining: (user ? user.proteinTarget : 120) - totalProtein  // ← add this
+      success: true,
+      meals,
+      totalCalories,
+      totalProtein,
+      calorieTarget,
+      proteinTarget,
+      remaining: calorieTarget - totalCalories,
+      proteinRemaining: proteinTarget - totalProtein,
+      date
     })
 
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 })
-
 /**
  * DELETE /api/meals/:mealId
  * Removes a specific meal log entry.
