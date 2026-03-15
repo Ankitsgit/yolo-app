@@ -2,14 +2,16 @@
 
 A 14-day AI-guided wellness reset platform that helps users lose weight, improve energy, and build long-term healthy habits through accountability, nutrition guidance, and progress tracking.
 
-![Show Image](#)
-![Show Image](#)
-![Show Image](#)
-![Show Image](#)
+##🚀 YOLO App Demo
+
+<p align="center">
+  <img src="Demo.gif" width="800">
+</p>
+
 
 ## 🔗 Live Demo
 
-- 🚀 View Live App — *(deployment link added after deploy)*
+- 🚀 View Live App — https://yolo-app-six.vercel.app/
 - 📂 GitHub Repository
 
 ## 📋 Table of Contents
