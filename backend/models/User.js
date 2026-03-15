@@ -9,6 +9,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true      // cannot be empty
   },
+  gender:{ 
+    type: String, 
+    enum: ['male', 'female', 'other'],
+      // enum: ['male', 'female', 'other', 'Male', 'Female', 'Other'],
+      // 🧠 LEARN: set() runs before saving — converts to lowercase
+      // so 'Male' becomes 'male' automatically
+    set: (v) => v?.toLowerCase(),
+   },
 
   email: {
     type: String,

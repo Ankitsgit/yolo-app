@@ -1,38 +1,141 @@
-/**
- * ProgramProgress.jsx — 14-day program completion tracker
- *
- * Shows visual progress bar + day dots for all 14 days.
- * A day counts as "completed" if habit score >= 3.
- * Data comes from HabitLog collection via streak endpoint.
- *
- * Props:
- *   currentDay  {number} — which day they're on
- *   consistency {number} — % from streak endpoint
- *   streak      {number} — current streak count
- */
+// /**
+//  * ProgramProgress.jsx — 14-day program completion tracker
+//  *
+//  * Shows visual progress bar + day dots for all 14 days.
+//  * A day counts as "completed" if habit score >= 3.
+//  * Data comes from HabitLog collection via streak endpoint.
+//  *
+//  * Props:
+//  *   currentDay  {number} — which day they're on
+//  *   consistency {number} — % from streak endpoint
+//  *   streak      {number} — current streak count
+//  */
 
-import React from 'react'
+// import React from 'react'
 
-// const ProgramProgress = ({ currentDay,selectedDay,  consistency, streak }) => {
+// // const ProgramProgress = ({ currentDay,selectedDay,  consistency, streak }) => {
 
-  // 🧠 LEARN: Array.from creates array from a length
-  // Array.from({ length: 14 }, (_, i) => i + 1)
-  // creates [1, 2, 3, ..., 14]
+//   // 🧠 LEARN: Array.from creates array from a length
+//   // Array.from({ length: 14 }, (_, i) => i + 1)
+//   // creates [1, 2, 3, ..., 14]
+// //   const days = Array.from({ length: 14 }, (_, i) => i + 1)
+
+// //   const progressPct = Math.round((currentDay / 14) * 100)
+
+// //   // Color for each day dot based on status
+// //   // 🧠 LEARN: function returning different colors based on condition
+// //   const getDotColor = (day) => {
+// //     if (day < currentDay)  return '#1D9E75'   // completed
+// //     if (day === currentDay) return '#9FE1CB'   // today
+// //     return '#e5e7eb'                            // future
+// //   }
+
+// //   return (
+// //     <div className="card">
+
+// //       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+// //         <h3 style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
+// //           Program progress
+// //         </h3>
+// //         <span style={{ fontSize: 22, fontWeight: 600, color: '#1D9E75' }}>
+// //           {progressPct}%
+// //         </span>
+// //       </div>
+
+// //       {/* Main progress bar */}
+// //       <div style={{ height: 10, background: '#f0f0f0', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+// //         <div style={{
+// //           height: '100%',
+// //           width: `${progressPct}%`,
+// //           background: 'linear-gradient(90deg, #1D9E75, #9FE1CB)',
+// //           borderRadius: 5,
+// //           transition: 'width 0.6s ease'
+// //         }} />
+// //       </div>
+
+// //       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+// //         <span style={{ fontSize: 12, color: '#666' }}>Day {currentDay} of 14</span>
+// //         <span style={{ fontSize: 12, color: '#666' }}>{14 - currentDay} days left</span>
+// //       </div>
+
+// //       {/* 14 day dots */}
+// //       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, 1fr)', gap: 4 }}>
+// //         {days.map(day => (
+// //           <div
+// //             key={day}
+// //             title={`Day ${day}`}
+// //             style={{
+// //               height: 24, borderRadius: 4,
+// //               background: getDotColor(day),
+// //               border: day === currentDay ? '2px solid #1D9E75' : 'none',
+// //               display: 'flex', alignItems: 'center', justifyContent: 'center',
+// //               fontSize: 9, color: day < currentDay ? 'white' : 'transparent',
+// //               transition: 'all 0.2s'
+// //             }}
+// //           >
+// //             {day < currentDay ? '✓' : ''}
+// //           </div>
+// //         ))}
+// //       </div>
+
+// //       {/* Stats row */}
+// //       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
+// //         <div style={{ background: '#f9fafb', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+// //           <div style={{ fontSize: 20, fontWeight: 600 }}>{streak} 🔥</div>
+// //           <div style={{ fontSize: 11, color: '#999' }}>day streak</div>
+// //         </div>
+// //         <div style={{ background: '#f9fafb', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+// //           <div style={{ fontSize: 20, fontWeight: 600 }}>{consistency}%</div>
+// //           <div style={{ fontSize: 11, color: '#999' }}>consistency</div>
+// //         </div>
+// //       </div>
+
+// //     </div>
+// //   )
+// // }
+
+// // export default ProgramProgress
+
+// // Update props
+// const ProgramProgress = ({ currentDay, selectedDay, consistency, streak }) => {
+
 //   const days = Array.from({ length: 14 }, (_, i) => i + 1)
-
 //   const progressPct = Math.round((currentDay / 14) * 100)
 
-//   // Color for each day dot based on status
-//   // 🧠 LEARN: function returning different colors based on condition
-//   const getDotColor = (day) => {
-//     if (day < currentDay)  return '#1D9E75'   // completed
-//     if (day === currentDay) return '#9FE1CB'   // today
-//     return '#e5e7eb'                            // future
+//   // 🧠 LEARN: three-way color logic
+//   // selected (viewing) = amber ring
+//   // completed past today = green
+//   // today = light green
+//   // future = gray
+//   const getDotStyle = (day) => {
+//     const isSelected  = day === selectedDay
+//     const isCompleted = day < currentDay
+//     const isToday     = day === currentDay
+//     const isFuture    = day > currentDay
+
+//     return {
+//       height: 24,
+//       borderRadius: 4,
+//       background:
+//         isCompleted ? '#1D9E75' :
+//         isToday     ? '#9FE1CB' :
+//         '#e5e7eb',
+//       // Selected day gets an amber ring regardless of status
+//       border: isSelected
+//         ? '2px solid #EF9F27'
+//         : isToday ? '2px solid #1D9E75'
+//         : 'none',
+//       display: 'flex', alignItems: 'center', justifyContent: 'center',
+//       fontSize: 9,
+//       color: isCompleted ? 'white' : 'transparent',
+//       transition: 'all 0.2s',
+//       cursor: 'default',
+//       opacity: isFuture ? 0.5 : 1
+//     }
 //   }
 
 //   return (
 //     <div className="card">
-
 //       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
 //         <h3 style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
 //           Program progress
@@ -42,71 +145,82 @@ import React from 'react'
 //         </span>
 //       </div>
 
-//       {/* Main progress bar */}
 //       <div style={{ height: 10, background: '#f0f0f0', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
 //         <div style={{
 //           height: '100%',
 //           width: `${progressPct}%`,
 //           background: 'linear-gradient(90deg, #1D9E75, #9FE1CB)',
-//           borderRadius: 5,
-//           transition: 'width 0.6s ease'
+//           borderRadius: 5, transition: 'width 0.6s ease'
 //         }} />
 //       </div>
 
-//       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+//       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
 //         <span style={{ fontSize: 12, color: '#666' }}>Day {currentDay} of 14</span>
-//         <span style={{ fontSize: 12, color: '#666' }}>{14 - currentDay} days left</span>
+//         <span style={{ fontSize: 12, color: '#666' }}>{14 - currentDay} days remaining</span>
 //       </div>
 
 //       {/* 14 day dots */}
 //       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, 1fr)', gap: 4 }}>
 //         {days.map(day => (
-//           <div
-//             key={day}
-//             title={`Day ${day}`}
-//             style={{
-//               height: 24, borderRadius: 4,
-//               background: getDotColor(day),
-//               border: day === currentDay ? '2px solid #1D9E75' : 'none',
-//               display: 'flex', alignItems: 'center', justifyContent: 'center',
-//               fontSize: 9, color: day < currentDay ? 'white' : 'transparent',
-//               transition: 'all 0.2s'
-//             }}
-//           >
+//           <div key={day} title={`Day ${day}`} style={getDotStyle(day)}>
 //             {day < currentDay ? '✓' : ''}
 //           </div>
 //         ))}
 //       </div>
 
-//       {/* Stats row */}
+//       {/* Legend */}
+//       <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
+//         {[
+//           { color: '#1D9E75', label: 'Done' },
+//           { color: '#9FE1CB', border: '#1D9E75', label: 'Today' },
+//           { color: '#e5e7eb', border: '#EF9F27', label: 'Viewing' },
+//           { color: '#e5e7eb', label: 'Upcoming' },
+//         ].map(item => (
+//           <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+//             <div style={{
+//               width: 10, height: 10, borderRadius: 2,
+//               background: item.color,
+//               border: `1.5px solid ${item.border || item.color}`
+//             }} />
+//             <span style={{ fontSize: 11, color: '#999' }}>{item.label}</span>
+//           </div>
+//         ))}
+//       </div>
+
+//       {/* Stats */}
 //       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
-//         <div style={{ background: '#f9fafb', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+//         <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, textAlign: 'center' }}>
 //           <div style={{ fontSize: 20, fontWeight: 600 }}>{streak} 🔥</div>
 //           <div style={{ fontSize: 11, color: '#999' }}>day streak</div>
 //         </div>
-//         <div style={{ background: '#f9fafb', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+//         <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, textAlign: 'center' }}>
 //           <div style={{ fontSize: 20, fontWeight: 600 }}>{consistency}%</div>
 //           <div style={{ fontSize: 11, color: '#999' }}>consistency</div>
 //         </div>
 //       </div>
-
 //     </div>
 //   )
 // }
-
 // export default ProgramProgress
 
-// Update props
+/**
+ * ProgramProgress.jsx — Redesigned program tracker
+ * Same props. New visual.
+ */
+
+import React from 'react'
+
+const T = {
+  green: '#4CAF50', greenDark: '#388E3C', greenLight: '#E8F5E9',
+  greenMid: '#81C784', orange: '#FF7043', text: '#1A1A2E',
+  textMid: '#4A4A6A', textLight: '#8888AA', white: '#FFFFFF',
+  border: '#E8EDE8', bg: '#F4F6F3',
+}
+
 const ProgramProgress = ({ currentDay, selectedDay, consistency, streak }) => {
-
-  const days = Array.from({ length: 14 }, (_, i) => i + 1)
   const progressPct = Math.round((currentDay / 14) * 100)
+  const days = Array.from({ length: 14 }, (_, i) => i + 1)
 
-  // 🧠 LEARN: three-way color logic
-  // selected (viewing) = amber ring
-  // completed past today = green
-  // today = light green
-  // future = gray
   const getDotStyle = (day) => {
     const isSelected  = day === selectedDay
     const isCompleted = day < currentDay
@@ -114,53 +228,79 @@ const ProgramProgress = ({ currentDay, selectedDay, consistency, streak }) => {
     const isFuture    = day > currentDay
 
     return {
-      height: 24,
-      borderRadius: 4,
-      background:
-        isCompleted ? '#1D9E75' :
-        isToday     ? '#9FE1CB' :
-        '#e5e7eb',
-      // Selected day gets an amber ring regardless of status
+      height: 28, borderRadius: 6,
+      background: isCompleted
+        ? `linear-gradient(135deg, ${T.green}, ${T.greenDark})`
+        : isToday
+        ? T.greenMid
+        : T.bg,
       border: isSelected
-        ? '2px solid #EF9F27'
-        : isToday ? '2px solid #1D9E75'
-        : 'none',
+        ? `2px solid ${T.orange}`
+        : isToday
+        ? `2px solid ${T.green}`
+        : `1px solid ${T.border}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 9,
-      color: isCompleted ? 'white' : 'transparent',
-      transition: 'all 0.2s',
+      fontSize: 9, color: isCompleted ? 'white' : 'transparent',
+      transition: 'all 0.25s ease',
+      opacity: isFuture ? 0.45 : 1,
+      boxShadow: isToday ? '0 2px 8px rgba(76,175,80,0.25)' : 'none',
       cursor: 'default',
-      opacity: isFuture ? 0.5 : 1
     }
   }
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#666' }}>
-          Program progress
-        </h3>
-        <span style={{ fontSize: 22, fontWeight: 600, color: '#1D9E75' }}>
-          {progressPct}%
+    <div style={{
+      background: T.white, borderRadius: 20,
+      border: `1px solid ${T.border}`,
+      padding: '22px 24px',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
+    }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: T.textLight, textTransform: 'uppercase', letterSpacing: '0.9px' }}>
+          Program Progress
         </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 28, fontWeight: 800, color: T.green, letterSpacing: '-1px' }}>
+            {progressPct}%
+          </span>
+        </div>
       </div>
 
-      <div style={{ height: 10, background: '#f0f0f0', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+      {/* Progress bar */}
+      <div style={{ position: 'relative', marginBottom: 8 }}>
         <div style={{
-          height: '100%',
-          width: `${progressPct}%`,
-          background: 'linear-gradient(90deg, #1D9E75, #9FE1CB)',
-          borderRadius: 5, transition: 'width 0.6s ease'
-        }} />
+          height: 10, background: T.bg,
+          borderRadius: 5, overflow: 'hidden',
+          border: `1px solid ${T.border}`,
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${progressPct}%`,
+            background: `linear-gradient(90deg, ${T.green}, ${T.greenMid})`,
+            borderRadius: 5,
+            transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+            position: 'relative',
+          }}>
+            {/* Shimmer effect */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 2s infinite',
+            }} />
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-        <span style={{ fontSize: 12, color: '#666' }}>Day {currentDay} of 14</span>
-        <span style={{ fontSize: 12, color: '#666' }}>{14 - currentDay} days remaining</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <span style={{ fontSize: 12, color: T.textLight, fontWeight: 500 }}>Day {currentDay} of 14</span>
+        <span style={{ fontSize: 12, color: T.textLight, fontWeight: 500 }}>{14 - currentDay} days remaining</span>
       </div>
 
-      {/* 14 day dots */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, 1fr)', gap: 4 }}>
+      {/* 14-day dot grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(14, 1fr)', gap: 5, marginBottom: 14 }}>
         {days.map(day => (
           <div key={day} title={`Day ${day}`} style={getDotStyle(day)}>
             {day < currentDay ? '✓' : ''}
@@ -168,37 +308,38 @@ const ProgramProgress = ({ currentDay, selectedDay, consistency, streak }) => {
         ))}
       </div>
 
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
-        {[
-          { color: '#1D9E75', label: 'Done' },
-          { color: '#9FE1CB', border: '#1D9E75', label: 'Today' },
-          { color: '#e5e7eb', border: '#EF9F27', label: 'Viewing' },
-          { color: '#e5e7eb', label: 'Upcoming' },
-        ].map(item => (
-          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{
-              width: 10, height: 10, borderRadius: 2,
-              background: item.color,
-              border: `1.5px solid ${item.border || item.color}`
-            }} />
-            <span style={{ fontSize: 11, color: '#999' }}>{item.label}</span>
+      {/* Stat boxes */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <div style={{
+          background: T.bg, borderRadius: 12,
+          padding: '12px 14px', textAlign: 'center',
+          border: `1px solid ${T.border}`,
+        }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: '-0.5px' }}>
+            {streak} <span style={{ fontSize: 18 }}>🔥</span>
           </div>
-        ))}
+          <div style={{ fontSize: 11, color: T.textLight, fontWeight: 500, marginTop: 2 }}>day streak</div>
+        </div>
+        <div style={{
+          background: T.bg, borderRadius: 12,
+          padding: '12px 14px', textAlign: 'center',
+          border: `1px solid ${T.border}`,
+        }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: T.green, letterSpacing: '-0.5px' }}>
+            {consistency}%
+          </div>
+          <div style={{ fontSize: 11, color: T.textLight, fontWeight: 500, marginTop: 2 }}>consistency</div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
-        <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, textAlign: 'center' }}>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{streak} 🔥</div>
-          <div style={{ fontSize: 11, color: '#999' }}>day streak</div>
-        </div>
-        <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, textAlign: 'center' }}>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{consistency}%</div>
-          <div style={{ fontSize: 11, color: '#999' }}>consistency</div>
-        </div>
-      </div>
+      <style>{`
+        @keyframes shimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position: 400px 0; }
+        }
+      `}</style>
     </div>
   )
 }
+
 export default ProgramProgress
